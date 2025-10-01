@@ -15,7 +15,7 @@ from keras import backend as K
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
 import tensorflow as tf
 # Use keras directly for all imports
 # from keras.applications.vgg19 import VGG19  # Not used in code
@@ -180,3 +180,19 @@ history = model.fit(
     verbose=1,
     callbacks=[early_stopping]
 )
+
+# Evaluate on validation set
+val_preds = model.predict(val_gen, verbose=1)
+val_true = np.argmax(np.concatenate([y for x, y in val_gen], axis=0), axis=1)
+val_pred = np.argmax(val_preds, axis=1)
+print("\nValidation Set Evaluation:")
+print(classification_report(val_true, val_pred, target_names=classes))
+print("Confusion Matrix:\n", confusion_matrix(val_true, val_pred))
+
+# Evaluate on test set
+test_preds = model.predict(test_gen, verbose=1)
+test_true = np.argmax(np.concatenate([y for x, y in test_gen], axis=0), axis=1)
+test_pred = np.argmax(test_preds, axis=1)
+print("\nTest Set Evaluation:")
+print(classification_report(test_true, test_pred, target_names=classes))
+print("Confusion Matrix:\n", confusion_matrix(test_true, test_pred))

@@ -81,9 +81,32 @@ def evaluate_model(model, val_gen, class_names):
     print(classification_report(y_true, y_pred, target_names=class_names))
     print("Confusion Matrix:\n", confusion_matrix(y_true, y_pred))
 
+# After training and validation, evaluate on test set
+def evaluate_model_on_generator(model, generator, class_names, set_name="Test"):
+    generator.reset()
+    y_true = []
+    y_pred = []
+    for i in range(len(generator)):
+        x, y = generator[i]
+        preds = model.predict(x, verbose=0)
+        y_true.extend(np.argmax(y, axis=1))
+        y_pred.extend(np.argmax(preds, axis=1))
+    print(f"\n{set_name} Set Evaluation:")
+    print(classification_report(y_true, y_pred, target_names=class_names))
+    print("Confusion Matrix:\n", confusion_matrix(y_true, y_pred))
+
 # ========== TRAINING RESNET50 (Keras) ONLY ========== 
 model = get_resnet50(len(class_names))
 history = train_model(model, train_gen, val_gen, epochs=25)
 
 # ========== EVALUATION ========== 
 evaluate_model(model, val_gen, class_names)
+# Evaluate on test set
+test_gen = datagen.flow_from_directory(
+    data_dir,
+    target_size=(IMG_SIZE, IMG_SIZE),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    shuffle=False
+)
+evaluate_model_on_generator(model, test_gen, class_names, set_name="Test")
