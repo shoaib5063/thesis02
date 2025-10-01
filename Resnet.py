@@ -97,7 +97,7 @@ def evaluate_model_on_generator(model, generator, class_names, set_name="Test"):
 
 # ========== TRAINING RESNET50 (Keras) ONLY ========== 
 model = get_resnet50(len(class_names))
-history = train_model(model, train_gen, val_gen, epochs=25)
+history = train_model(model, train_gen, val_gen, epochs=10)
 
 # ========== EVALUATION ========== 
 evaluate_model(model, val_gen, class_names)
